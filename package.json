@@ -1,0 +1,23 @@
+{
+  "name": "xchat",
+  "version": "0.0.0",
+  "description": "simple chatroom",
+  "main": "app.js",
+  "dependencies": {
+    "socket.io": "~0.9.16",
+    "express": "~3.3.7",
+    "redis": "~0.8.4",
+    "ejs": "~0.8.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chunpu/xchat.git"
+  },
+  "author": "",
+  "license": "BSD",
+  "readmeFilename": "readme.md"
+}
