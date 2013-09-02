@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width'>
+  <link rel='stylesheet' href='http://cdn.staticfile.org/jquery-mobile/1.3.2/jquery.mobile.css' />
+  <script src='http://cdn.staticfile.org/jquery/2.0.3/jquery.js'></script>
+  <script src='http://cdn.staticfile.org/jquery-mobile/1.3.2/jquery.mobile.js'></script>
+</head>
+<body>
+<div data-role='page'>
+  <div data-role='header'>
+    <h1>用户列表</h1>
+  </div>
+  <div data-role='content'>
+    <ul data-role='listview'>
+      <% for (var i = 0; i < members.length; i++) { %>
+        <li><a href='#'><%= members[i]%></a></li>
+      <% } %>
+    </ul>
+  </div>
+</div>
+</body>
+ 

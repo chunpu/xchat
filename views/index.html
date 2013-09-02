@@ -1,0 +1,131 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width'>
+  <link rel='stylesheet' href='http://cdn.staticfile.org/jquery-mobile/1.3.2/jquery.mobile.css' />
+  <script src='http://cdn.staticfile.org/jquery/2.0.3/jquery.js'></script>
+  <script src='http://cdn.staticfile.org/jquery-mobile/1.3.2/jquery.mobile.js'></script>
+  <script src='/socket.io/socket.io.js'></script>
+  <style>
+  #timeline {
+    height: 80% 
+  }
+  span > time {
+    padding: 7px;
+    color: #777;
+  }
+  </style>
+</head>
+<body>
+<div data-role='page'>
+  <div data-role='header'>
+    <% if (name.indexOf('匿名用户') === -1) { %>
+      <a href='/' data-icon='list' data-transition='flip'>返回</a>
+    <% } else { %>
+      <a href='/signout' data-icon='list' data-transition='flip'>退出</a>
+    <% } %>
+    <h1><%= room%></h1>
+    <a href='/members/<%= room%>' data-icon='list' data-transition='flip' data-rel='dialog'>用户列表</a>
+  </div>
+  <div data-role='content'>
+    <ul data-role="listview" id='timeline'>
+      <li>欢迎来到房间<%= room%></li>
+    </ul>
+  </div>
+  <% if (name.indexOf('匿名用户') === -1) { %>
+  <div data-role='content'>
+    <form>
+      <input type='text' id='post' name='post'/>
+      <button>发送</button>
+    </form>
+  </div>
+  <% } else { %>
+  <div data-role='content'>
+    <span>匿名用户只能看</span>
+  </div>
+  <% } %>
+  <div data-role='footer'>
+    <h1><%= name%></h1>
+  </div>
+  <script>
+    var socket = io.connect('/')
+    var room = '<%= room%>'
+    var name = '<%= name%>'
+    socket.on('connect', function(data) {
+      // join the room
+      // then get the last 10(default) timeline
+      socket.emit('room', {room: room, name: name})
+    })
+  </script>
+<script>
+// fuck
+$(function() {
+
+socket.on('timeline', function(data) {
+  if (Array.isArray(data)) {
+    // array
+    $.each(data, function() {
+      append(this)   
+    })
+  } else {
+    append(data)
+  }
+})
+
+socket.on('collect', function() {
+  socket.emit('collect', {name: name, room: room})
+})
+
+socket.emit('members', room)
+
+socket.on('members', function(members) {
+  console.log(members)
+  if (members.type) {
+    // join or leave
+    var type = members.type
+    var who = members.who
+    if (type === 'join') {
+      _append('<li>欢迎@' + who + '进入房间</li>')
+    }
+  }
+})
+  
+$('form').submit(function() {
+  var post = $('#post').val().trim()
+  if (post !== '') {
+    // post
+    console.log(111)
+    socket.emit('post', {text: post, name: name})
+    $('#post').val('')
+  }
+  return false
+})
+
+function append(str) {
+  var arr = str.split('|')
+  var o = {
+    name: arr[0],
+    time: arr[1],
+    text: arr[2] // i know wrong.
+  }
+  var html = '<li>'
+  var time = new Date(parseInt(o.time))
+  console.log(typeof time)
+  time = '<time>' + time.getHours() + ':' + time.getMinutes() + ':' + time.getSeconds() + '</time>'
+  html += '<span>@' + o.name + time + '</span><br>'
+  html += o.text
+  html += '</li>'
+  _append(html)
+}
+
+function _append(html) {
+  $('#timeline').append(html).listview('refresh') // cool
+}
+
+})
+</script>
+
+</div>
+</body>
+</html>
